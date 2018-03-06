@@ -1,0 +1,7 @@
+/^Numbers of processed Records/,/Earliest/{
+/Earliest/d
+s/   *//g
+/$^/d
+p
+}
+

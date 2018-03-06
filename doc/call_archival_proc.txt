@@ -1,0 +1,31 @@
+All the CDR files retreived from MSC and SCSN are placed into
+subdirectories under WORK_DIR directory. Now it's configured
+as /bscs/work/MP/SWITCH/FTAM/IN
+
+All the datasources (NE) are stored in
+/bscs/work/MP/SWITCH/FTAM/IN/msc_list.txt file.
+File format:
+MSC_NAME - name of the NE
+IP_ADDRESS - IP address. Could (and should) be changed to DNS name
+FTP_USER - FTP username to be used for NE connection
+FTP_PASS - FTP password to use in connection
+FILE_DIR - subdirectory name to put files in (in working and archival
+directories)
+FILE_PREFIX - prefix for files to be created with
+REMOTE_FILE - filename on the NE to get while FTP session
+After the file is retreived and checked, it is copied into
+/bscs/work/ARCHIVE/CDR
+directory into the same subdirectories.
+These files are archived every night by archive_cdr.sh script.
+
+Workflow:
+- directory list is retreived from MSC_LIST file under WORK_DIR
+directory
+- for each FILE_DIR from list under ARCHIVE_DIR directory all the
+files by mask FILE_PREFIX.YESTERDAY are tarred and gzipped
+- if previous step is successful, all the files by the same mask
+are deleted from ARCHIVE_DIR and WORK_DIR
+
+Retention period to store data in the archive directory is one month.
+After that all the files must be moved onto the tapes and deleted
+from archive directory.

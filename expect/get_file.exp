@@ -1,0 +1,63 @@
+#!/usr/local/bin/expect -f
+
+global confDCHTimeout
+global DCHspawnid
+
+set user $env(FTP_USER)
+#set user [lrange $argv 0 0]
+#set passwd [lrange $argv 1 1]
+set passwd $env(FTP_PASSWD)
+set ftp_host [lrange $argv 2 2]
+#set remote_file [lrange $argv 3 3]
+set remote_file $env(FTP_FILE)
+set tmp_file [lrange $argv 4 4]
+set timeout 30
+
+spawn ftp -n $ftp_host
+set DCHspawnid $spawn_id
+
+puts "INFO: starting ftp to $ftp_host"
+
+expect timeout {
+	puts "ERROR: timeout while waiting for username request"
+	puts "INFO: Finished."
+	exit 1
+} "ftp>*"
+
+send "user $user\r"
+
+expect timeout {
+	puts "ERROR: timeout while waiting for password request"
+	puts "INFO: Finished."
+	exit 2
+} "*sword:"
+
+send "$passwd\r"
+
+expect timeout {
+	puts "ERROR: timeout while waiting for password verification"
+	puts "INFO: Finished."
+	exit 3
+} "*LOGGED IN*"
+
+puts "INFO: Successfully connected to the server"
+send "binary\r"
+
+expect timeout {
+	puts "ERROR: timeout while changing mode to binary"
+	puts "INFO: Finished."
+	exit 5
+} "ftp>*"
+
+puts "INFO: Transfer mode has been changed to binary"
+send "get $remote_file $tmp_file\r"
+
+expect {
+	-re "FILE NAME NOT ALLOWED"	{puts Timeout\n ; exit 6}
+	-re "REQUESTED FILE ACTION SUCCESSFUL"	{puts Completed\n}
+}
+
+send "bye\r"
+
+
+

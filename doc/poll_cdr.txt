@@ -1,0 +1,141 @@
+DATA COLLECTION SCRIPT (poll_cdr.sh)
+
+
+Description
+
+poll_cdr.sh does following steps:
+- retreives CDR from each NE;
+- checks CDR file integrity and consistency;
+- copies checked file to archive directory and DIH input directory
+
+
+Periodicity
+
+Every 20 min - 20th, 40th and 00th minute of each hour
+
+
+Files and directories
+
+<work> is BSCS working directory usually defined by $WORK_DIR
+variable.
+
+Control log file
+
+When script begins operations, the following control file is
+created:
+
+<work>/CTRL/poll_cdr.PID
+This file contains PID number of the process started by the
+script.
+
+Error log file
+
+All the actions during the sript operation are written to log-file.
+Log file is named using the following name conventions:
+
+<work>/TMP/POLL_CDR_yyyymmddhh24mi.LOG
+
+All general error messages and actions are written into this file.
+
+
+Workflow
+
+Configuration variables
+
+All the NE to get the data from are stored in msc_list.txt file.
+This file should be must be placed in <work> directory.
+
+File format:
+
+MSC_NAME - MSC's name
+IP_ADDRESS - IP address or host name of MSC to connect to
+FTP_USER - username to be used in FTP session
+FTP_PASS - password to be used in FTP session
+FILE_DIR - directory name under WORK_DIR to put files in
+FILE_PREFIX - file prefix to be used for new files
+REMOTE_FILENAME - filename on NE to get
+TMP_FILENAME - temporary filename to put files during download
+process
+
+All the variables should be put on one line. Delimiter -
+whitespace.
+
+Data collection
+
+Data is retreived from all the NE in the list using FTP protocol.
+Used protocol is not the standard one and contains only restricted
+set of commands due to security and consistency reasons.
+
+Script connects to NE by FTP using FTP_USER and FTP_PASS supplied.
+In case of any FTP errors the file is not released on MSC and the
+same file will be downloaded on the next session.
+
+Integrity checking
+
+Each file from MSC is retreived in 2 copies. After the copies are
+compared and found identical, one of them is renamed accordingly to
+FILE_PREFIX and put into WORK_DIR/FILE_DIR directory.
+Name of the last file retreived is written to ID file that must exist
+in each directory.
+ID filename mask:
+YYMMDDHH24MI.ID
+
+ID file contents:
+INDEX file. DO NOT DELETE!
+Last cdr file downloaded: - IA.ICMCRAL.0412051100
+
+If either ID file or CDR file mentioned in ID file
+doesn't exist, process skips current NE and tries to process next
+one.
+
+After the file is copied from NE and passed all the necessary
+checks, it is copied into ARCHIVE_DIR/FILE_DIR and to DIH_INPUT_DIR
+directory for DIH processing.
+
+In case of any errors during execution, script skips processing for
+this NE and tries to process next one.
+
+After all the NE from MSC list are processed, log file is sent to
+SUPPORT_MAIL address.
+
+Possible problems.
+
+1. File backup for ${MSC_NAME} failed.
+Copying of the retreived file to archive directory failed.
+Actions: check the reason for the error and copy the file to
+archive directory.
+2. Release of CDR file on "${MSC_NAME}" has failed. 
+File was not released on NE after downloading.
+Actions: wait for the next download session. If the problem persists,
+inform Network Operations Group (noc@wataniya-algerie.com)
+3. FTP transfer for "${MSC_NAME}" failed
+An error occured during FTP session
+Actions: wait for the next download session. If the problem persist,
+check possible reasons for failure. Inform NOC if needed
+4. CDR file integrity check for "${MSC_NAME}" failed
+There was an error during FTP download. File was not downloaded
+completely or is damaged.
+Actions: see p.3
+5. Download from "${MSC_NAME}" failed
+There was an error during FTP download.
+Actions: see p.3
+6. ID file is not found
+ID file in corresponding directory is missing.
+Actions: recreate the file according to the rules specified.
+7. CDR file specified in ID file doesn't exist
+CDR file specified in ID file is non-existing or incorrect.
+Actions: if the file specified in ID file was moved to archive,
+restore the file. If it doesn't exist - create a dummy file or
+modify ID file to point to existing one.
+8. More than one ID file exists
+There are more than one ID file in correspoding directory.
+Actions: delete one of the ID files.
+9. Process is already running. Exiting...
+Previuos download session is still running.
+Actions: check if session is OK. If it's finished - delete the
+control file from CTRL directory.
+10. MSC "${MSC_NAME}" is not available
+MSC cannot be accessed
+Actions: wait for the next download session. If the problem
+persists, manual check is needed. If MSC is not available, inform
+NOC.

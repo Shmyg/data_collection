@@ -1,0 +1,12 @@
+0-File is an input file for the FIH or PIH-File is just loaded
+1-File has been processed unsuccessfully, UTX file has not been created, it is possible to repeat the conversion process for the complete input file!-Processed unsuccessfuly
+2-File has been processed completely successfully, recycling is not possible, UTX file has been created!-Processed successfully
+3-File has been processed partially successfully, UTX and recycling CDR file have been created!-Processed partially
+4-File is a recycling input file. FIH will process the recycling file! The status will be updated by MP (ST) online module (3>4)!
+20-File has been reserved for one FIH instance or PIH but not yet processed completely-File is being processed
+10-The import process has started to write the records into the table PIHTAB.
+30-The records stored in the table PIHTAB have been processed, but the acknowledge and rejection file have not been written yet.
+40-The acknowledge and the rejection file have been written.
+48-The import process has successfully finished, but there are still records in the interface table that have been rejected by the PTH. This status is used only by the import process PIHO.
+50-The PIHTAB entries have been deleted and the import process has successfully finished-Processed successfully
+60-The import process has aborted because of a serious error. 

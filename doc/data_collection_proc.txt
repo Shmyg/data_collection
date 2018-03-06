@@ -1,0 +1,16 @@
+DATA COLLECTION
+
+Purpose
+
+Data collection collects the CDRs (Call Data Records) from all the
+NE (Network Elements) defined in the system, checks data integrity
+and consistency, puts them into DIH (Device Input Handler) working
+directory and copies them into archive.
+
+Applications
+
+Data collection consists of:
+1. Data collection script (poll_cdr.sh).
+2. CDR archival script (archive_cdr.sh).
+3. Database procedure to check number of files registered in BSCS
+for the last day (data_collection package)

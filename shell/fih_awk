@@ -1,0 +1,11 @@
+#!/bin/awk -f
+BEGIN { FS = ":" }
+{
+stats [ $1 ] = stats [ $1 ] + $2
+}
+END {
+	for (i in stats) {
+	printf ("%-50s%10d\n", i, stats [ i] );
+	}
+}
+

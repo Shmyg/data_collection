@@ -1,0 +1,16 @@
+/----------/,/-----------/{
+d
+}
+/Reason Code/,/Information derived/!{
+d
+}
+/UDR/,/Information/d
+s/  *//g
+/G$/{
+N
+s/\n//g
+}
+/^$/{
+d
+}
+
